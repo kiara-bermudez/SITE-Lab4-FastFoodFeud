@@ -29,10 +29,29 @@ export function App() {
   const [currentRestaurant, setCurrentRestaurant] = React.useState(null);
   let currentMenuItems = data.filter((item) => {return item.food_category === currentCategory && item.restaurant === currentRestaurant});
   const [selectedMenuItem, setSelectedMenuItem] = React.useState(null);
-  const [currentInstruction, setCurrentInstruction] = React.useState(appInfo.instructions.start);
   let closeCategoryClick = false;
   let closeRestaurantClick = false;
   let closeMenuItemClick = false;
+
+  let setInstruction = () => {
+    let instruction = "";
+    console.log("cat",currentCategory);
+    console.log("rest",currentRestaurant);
+    console.log("item",currentMenuItems);
+    if (currentCategory && !currentRestaurant) {
+      instruction = appInfo.instructions.onlyCategory;
+    } else if (currentRestaurant && !currentCategory) {
+      instruction = appInfo.instructions.onlyRestaurant;
+    } else if (currentCategory && currentRestaurant && !selectedMenuItem) {
+      instruction = appInfo.instructions.noSelectedItem;
+    } else if (currentCategory && currentRestaurant && selectedMenuItem) {
+      instruction = appInfo.instructions.allSelected;
+    } else {
+      instruction = appInfo.instructions.start;
+    }
+
+    return instruction;
+  }
 
   return (
     <main className="App">
@@ -51,22 +70,17 @@ export function App() {
                   closeCategoryClick=false;
                 } else {
                   setCurrentCategory(category);
+                  console.log("here2");
                 }
-                
+                console.log("here",category);
                 console.log("onclick");
-                
-                if (currentRestaurant == null) {
-                  setCurrentInstruction(appInfo.instructions.onlyCategory);
-                } else {
-                  setCurrentInstruction(appInfo.instructions.noSelectedItem);
-                }
-                
               }}
 
               closeClick={() => {
                 setCurrentCategory(null);
                 closeCategoryClick=true;
                 console.log("closeclick");
+                
               }}
               
               >
@@ -98,13 +112,6 @@ export function App() {
                   }
 
                   console.log("onclick restaurant");
-
-                  if (currentCategory == null) {
-                    setCurrentInstruction(appInfo.instructions.onlyRestaurant);
-                  } else {
-                    setCurrentInstruction(appInfo.instructions.noSelectedItem);
-                  }
-                  
                 }}
                 
                 closeClick={() => {
@@ -120,7 +127,7 @@ export function App() {
         </div>
 
         {/* INSTRUCTIONS GO HERE */}
-        <Instructions instructions={currentInstruction}/>
+        <Instructions instructions={setInstruction()}/>
 
         {/* MENU DISPLAY */}
         <div className="MenuDisplay display">
@@ -138,7 +145,6 @@ export function App() {
                   setSelectedMenuItem(item);
                 }
                 
-                setCurrentInstruction(appInfo.instructions.allSelected);
               }}
               closeClick={() => {
                 setSelectedMenuItem(null);
