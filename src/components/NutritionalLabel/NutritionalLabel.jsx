@@ -12,11 +12,15 @@ export function NutritionalLabel(props) {
 
       <ul className="fact-list">
         { nutritionFacts.map((fact) => {
+          let attributeName = fact.attribute;
+          if (fact.attribute == "fiber") {
+            attributeName = "dietary_fiber";
+          }
           return (
           <NutritionalLabelFact
             key={fact.id}
             label={fact.label}
-            attribute={fact.attribute}
+            attribute={attributeName}
             item={props.item}
           >
           </NutritionalLabelFact>)
