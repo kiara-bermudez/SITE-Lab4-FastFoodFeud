@@ -1,11 +1,13 @@
 import * as React from "react"
 // IMPORT ANY NEEDED COMPONENTS HERE
 import Header from "./components/Header/Header"
-import Chip from "./components/Chip/Chip"
 import { createDataSet } from "./data/dataset"
 import "./App.css"
 import Instructions from "./components/Instructions/Instructions"
-import NutritionalLabel from "./components/NutritionalLabel/NutritionalLabel"
+import CategoriesColumn from "./components/CategoriesColumn"
+import RestaurantsRows from "./components/RestaurantsRows"
+import MenuDisplay from "./components/MenuDisplay"
+import DataSource from "./components/DataSource"
 
 // don't move this!
 export const appInfo = {
@@ -56,38 +58,7 @@ export function App() {
   return (
     <main className="App">
       {/* CATEGORIES COLUMN */}
-      <div className="CategoriesColumn col">
-        <div className="categories options">
-          <h2 className="title">Categories</h2>
-          {categories.map((category) => (
-            <Chip
-              key={category} 
-              label={category} 
-              isActive={category===currentCategory}
-              onClick={() => {
-                setSelectedMenuItem(null);
-                if (closeCategoryClick) {
-                  closeCategoryClick=false;
-                } else {
-                  setCurrentCategory(category);
-                  console.log("here2");
-                }
-                console.log("here",category);
-                console.log("onclick");
-              }}
-
-              closeClick={() => {
-                setCurrentCategory(null);
-                closeCategoryClick=true;
-                console.log("closeclick");
-                
-              }}
-              
-              >
-            </Chip>
-          ))}
-        </div>
-      </div>
+      <CategoriesColumn closeCategoryClick={closeCategoryClick} currentCategory={currentCategory} setCurrentCategory={setCurrentCategory} categories={categories} setSelectedMenuItem={setSelectedMenuItem}/>
 
       {/* MAIN COLUMN */}
       <div className="container">
@@ -95,84 +66,15 @@ export function App() {
         <Header title={appInfo.title} tagline={appInfo.tagline} description={appInfo.description}/>
 
         {/* RESTAURANTS ROW */}
-        <div className="RestaurantsRow">
-          <h2 className="title">Restaurants</h2>
-          <div className="restaurants options">
-            {restaurants.map((restaurant) => (
-              <Chip 
-                key={restaurant} 
-                label={restaurant}
-                isActive={restaurant===currentRestaurant}
-                onClick={() => {
-                  setSelectedMenuItem(null);
-                  if (closeRestaurantClick) {
-                    closeRestaurantClick=false; 
-                  } else {
-                    setCurrentRestaurant(restaurant);
-                  }
-
-                  console.log("onclick restaurant");
-                }}
-                
-                closeClick={() => {
-                  setCurrentRestaurant(null);
-                  closeRestaurantClick=true;
-                  console.log("closeclick restaurant");
-                }}
-                >
-              </Chip>
-            ))}
-            
-          </div>
-        </div>
+        <RestaurantsRows closeRestaurantClick={closeRestaurantClick} currentRestaurant={currentRestaurant} setCurrentRestaurant={setCurrentRestaurant} restaurants={restaurants} setSelectedMenuItem={setSelectedMenuItem}/>
 
         {/* INSTRUCTIONS GO HERE */}
         <Instructions instructions={setInstruction()}/>
 
         {/* MENU DISPLAY */}
-        <div className="MenuDisplay display">
-          <div className="MenuItemButtons menu-items">
-            <h2 className="title">Menu Items</h2>
-            {currentMenuItems.map((item) => (
-              <Chip
-              key={item.item_name}
-              label={item.item_name}
-              isActive={item===selectedMenuItem}
-              onClick={() => {
-                if (closeMenuItemClick) {
-                  closeMenuItemClick=false;
-                } else {
-                  setSelectedMenuItem(item);
-                }
-                
-              }}
-              closeClick={() => {
-                setSelectedMenuItem(null);
-                closeMenuItemClick=true;
-                console.log("closeclick item");
-              }}
-              >
-              </Chip>
-            ))}
-          </div>
+        <MenuDisplay closeMenuItemClick={closeMenuItemClick} currentMenuItems={currentMenuItems} selectedMenuItem={selectedMenuItem} setSelectedMenuItem={setSelectedMenuItem} />
 
-          {/* NUTRITION FACTS */}
-          <div className="NutritionFacts nutrition-facts">
-            {selectedMenuItem != null ? 
-              <NutritionalLabel 
-                item={selectedMenuItem}
-                >
-
-              </NutritionalLabel>
-              : <span></span>
-            }
-              
-          </div>
-        </div>
-
-        <div className="data-sources">
-          <p>{appInfo.dataSource}</p>
-        </div>
+        <DataSource appInfo={appInfo}/>
       </div>
     </main>
   )
