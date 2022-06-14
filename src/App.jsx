@@ -1,7 +1,11 @@
 import * as React from "react"
 // IMPORT ANY NEEDED COMPONENTS HERE
+import Header from "./components/Header/Header"
+import Chip from "./components/Chip/Chip"
 import { createDataSet } from "./data/dataset"
 import "./App.css"
+import Instructions from "./components/Instructions/Instructions"
+import NutritionalLabel from "./components/NutritionalLabel/NutritionalLabel"
 
 // don't move this!
 export const appInfo = {
@@ -21,37 +25,143 @@ export const appInfo = {
 const { data, categories, restaurants } = createDataSet()
 
 export function App() {
+  const [currentCategory, setCurrentCategory] = React.useState(null);
+  const [currentRestaurant, setCurrentRestaurant] = React.useState(null);
+  let currentMenuItems = data.filter((item) => {return item.food_category === currentCategory && item.restaurant === currentRestaurant});
+  const [selectedMenuItem, setSelectedMenuItem] = React.useState(null);
+  const [currentInstruction, setCurrentInstruction] = React.useState(appInfo.instructions.start);
+  let closeCategoryClick = false;
+  let closeRestaurantClick = false;
+  let closeMenuItemClick = false;
+
   return (
     <main className="App">
       {/* CATEGORIES COLUMN */}
       <div className="CategoriesColumn col">
         <div className="categories options">
           <h2 className="title">Categories</h2>
-          {/* YOUR CODE HERE */}
+          {categories.map((category) => (
+            <Chip
+              key={category} 
+              label={category} 
+              isActive={category===currentCategory}
+              onClick={() => {
+                setSelectedMenuItem(null);
+                if (closeCategoryClick) {
+                  closeCategoryClick=false;
+                } else {
+                  setCurrentCategory(category);
+                }
+                
+                console.log("onclick");
+                
+                if (currentRestaurant == null) {
+                  setCurrentInstruction(appInfo.instructions.onlyCategory);
+                } else {
+                  setCurrentInstruction(appInfo.instructions.noSelectedItem);
+                }
+                
+              }}
+
+              closeClick={() => {
+                setCurrentCategory(null);
+                closeCategoryClick=true;
+                console.log("closeclick");
+              }}
+              
+              >
+            </Chip>
+          ))}
         </div>
       </div>
 
       {/* MAIN COLUMN */}
       <div className="container">
         {/* HEADER GOES HERE */}
+        <Header title={appInfo.title} tagline={appInfo.tagline} description={appInfo.description}/>
 
         {/* RESTAURANTS ROW */}
         <div className="RestaurantsRow">
           <h2 className="title">Restaurants</h2>
-          <div className="restaurants options">{/* YOUR CODE HERE */}</div>
+          <div className="restaurants options">
+            {restaurants.map((restaurant) => (
+              <Chip 
+                key={restaurant} 
+                label={restaurant}
+                isActive={restaurant===currentRestaurant}
+                onClick={() => {
+                  setSelectedMenuItem(null);
+                  if (closeRestaurantClick) {
+                    closeRestaurantClick=false; 
+                  } else {
+                    setCurrentRestaurant(restaurant);
+                  }
+
+                  console.log("onclick restaurant");
+
+                  if (currentCategory == null) {
+                    setCurrentInstruction(appInfo.instructions.onlyRestaurant);
+                  } else {
+                    setCurrentInstruction(appInfo.instructions.noSelectedItem);
+                  }
+                  
+                }}
+                
+                closeClick={() => {
+                  setCurrentRestaurant(null);
+                  closeRestaurantClick=true;
+                  console.log("closeclick restaurant");
+                }}
+                >
+              </Chip>
+            ))}
+            
+          </div>
         </div>
 
         {/* INSTRUCTIONS GO HERE */}
+        <Instructions instructions={currentInstruction}/>
 
         {/* MENU DISPLAY */}
         <div className="MenuDisplay display">
           <div className="MenuItemButtons menu-items">
             <h2 className="title">Menu Items</h2>
-            {/* YOUR CODE HERE */}
+            {currentMenuItems.map((item) => (
+              <Chip
+              key={item.item_name}
+              label={item.item_name}
+              isActive={item===selectedMenuItem}
+              onClick={() => {
+                if (closeMenuItemClick) {
+                  closeMenuItemClick=false;
+                } else {
+                  setSelectedMenuItem(item);
+                }
+                
+                setCurrentInstruction(appInfo.instructions.allSelected);
+              }}
+              closeClick={() => {
+                setSelectedMenuItem(null);
+                closeMenuItemClick=true;
+                console.log("closeclick item");
+              }}
+              >
+              </Chip>
+            ))}
           </div>
 
           {/* NUTRITION FACTS */}
-          <div className="NutritionFacts nutrition-facts">{/* YOUR CODE HERE */}</div>
+          <div className="NutritionFacts nutrition-facts">
+            {selectedMenuItem != null ? 
+              <NutritionalLabel 
+                item={selectedMenuItem}
+                >
+
+              </NutritionalLabel>
+              : <span></span>
+            }
+              
+          </div>
         </div>
 
         <div className="data-sources">
